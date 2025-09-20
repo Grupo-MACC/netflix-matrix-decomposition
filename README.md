@@ -1,3 +1,3 @@
-# netflix-matrix-decomposition
+# probabilistic-matrix-factorization
 
-## Inspirado en el repositorio de github: https://github.com/harshraj11584/Paper-Implementation-Matrix-Factorization-Recommender-Systems-Netflix
+## Inspirado en el repositorio de github: https://github.com/fuhailin/Probabilistic-Matrix-Factorization 
