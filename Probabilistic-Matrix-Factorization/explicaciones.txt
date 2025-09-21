@@ -1,0 +1,96 @@
+Análisis del Algoritmo Probabilistic Matrix Factorization (PMF)
+
+Resumen del Proyecto
+
+Este proyecto consiste en la implementación y el análisis exhaustivo del algoritmo Probabilistic Matrix Factorization (PMF), un modelo fundamental en los sistemas de recomendación por filtrado colaborativo. Utilizando el dataset MovieLens 100k, se ha entrenado un modelo para predecir las calificaciones de los usuarios y generar recomendaciones de películas.
+
+El objetivo de este análisis no es solo construir un modelo funcional, sino también investigar a fondo su comportamiento, visualizar sus componentes internos y comprender de manera crítica tanto sus fortalezas como sus limitaciones inherentes.
+
+1. El Algoritmo: Probabilistic Matrix Factorization
+
+La idea central de PMF es abordar el problema de una matriz de calificaciones Usuario-Película que es muy grande y dispersa (con la mayoría de las calificaciones desconocidas). El algoritmo descompone esta matriz en dos matrices de menor dimensión:
+
+    Una matriz de factores latentes de Usuarios (U).
+
+    Una matriz de factores latentes de Películas (V).
+
+Cada fila en U representa a un usuario a través de un vector de "rasgos de gusto" abstractos, y cada fila en V representa una película a través de un vector de "atributos" correspondientes. El modelo aprende estos vectores de tal manera que el producto punto del vector de un usuario y el de una película se aproxime a la calificación real que ese usuario le dio a esa película.
+
+2. Metodología y Entrenamiento
+
+2.1. Dataset
+
+Se utilizó el dataset MovieLens 100k, que contiene 100,000 calificaciones de 943 usuarios sobre 1682 películas. Los datos se dividieron en un 80% para entrenamiento y un 20% para prueba.
+
+2.2. Optimización del Modelo y Hallazgo Clave: Early Stopping
+
+El modelo se entrenó utilizando Descenso de Gradiente Estocástico (SGD) para minimizar el Error Cuadrático Medio (RMSE) entre las predicciones y las calificaciones reales.
+
+Durante la fase de experimentación, se observó un claro fenómeno de sobreajuste (overfitting) al entrenar el modelo durante un número elevado de épocas (50). Como muestra la curva de aprendizaje, el error en los datos de entrenamiento continuaba disminuyendo, pero el error en los datos de prueba, tras alcanzar un mínimo, comenzaba a aumentar.
+
+Este análisis reveló que el punto óptimo de rendimiento se encontraba alrededor de las 15 épocas. Al detener el entrenamiento en este punto (Early Stopping), logramos el modelo con el RMSE más bajo en el conjunto de prueba (0.936), evitando el sobreajuste y consiguiendo el modelo más generalizable.
+
+Gráfico 1: Curva de aprendizaje mostrando sobreajuste después de la época 15.
+
+3. Análisis Profundo del Modelo
+
+Una vez obtenido el modelo óptimo, se realizaron cuatro análisis para comprender su comportamiento en detalle.
+
+3.1. Visualización de Factores Latentes (t-SNE)
+
+Para "ver" lo que el modelo aprendió, se utilizó la técnica de reducción de dimensionalidad t-SNE para proyectar los vectores de factores latentes (de 10 dimensiones) en un mapa 2D.
+
+    Análisis de Películas (por Género): El mapa de películas no mostró agrupaciones claras y distintas por género. Esto sugiere que los factores latentes aprendidos no se corresponden directamente con las etiquetas de género, sino con conceptos más abstractos que impulsan las calificaciones, como "éxito de taquilla", "cine de culto" o "atractivo familiar", los cuales trascienden los géneros tradicionales.
+
+    Análisis de Usuarios (por Profesión): El mapa de usuarios reveló agrupaciones sutiles pero visibles de usuarios con la misma profesión. Esto indica que el modelo aprendió de forma autónoma que las personas con profesiones similares tienden a compartir perfiles de gusto parecidos.
+
+3.2. Calidad de las Predicciones: Sesgo hacia la Media
+
+Se generó un histograma para comparar la distribución de las calificaciones reales con las predicciones del modelo.
+
+Gráfico 2: Comparación de la frecuencia de ratings reales vs. los predichos.
+
+El gráfico demuestra una de las limitaciones más importantes del PMF: un fuerte sesgo hacia la media. El modelo es muy bueno prediciendo calificaciones promedio (3 y 4), pero es excesivamente conservador y falla sistemáticamente en predecir calificaciones extremas (1 y 5). Para minimizar el error global, el modelo evita "arriesgarse" con predicciones de opiniones fuertes.
+
+3.3. Estudio de Caso: Recomendaciones para el Usuario #196
+
+Para hacer tangible el funcionamiento del modelo, se analizó a un usuario específico:
+
+    Perfil: El usuario #196 muestra un gusto por comedias de los 90 (Ace Ventura) y dramas clásicos, pero curiosamente no le gustaron películas populares como Men in Black.
+
+    Recomendaciones: El modelo recomendó una lista de películas clásicas y aclamadas por la crítica (Unforgiven, Lawrence of Arabia, The Shining).
+
+    Conclusión del Caso: El análisis demostró que el modelo es capaz de identificar patrones de gusto complejos (preferencia por el cine clásico), pero al mismo tiempo puede ignorar otros patrones más evidentes (gusto por comedias ligeras), mostrando tanto su inteligencia como sus puntos ciegos.
+
+3.4. Autopsia del Modelo: Análisis de los Peores Errores
+
+Finalmente, se analizaron las predicciones donde el modelo cometió los errores más grandes. El patrón fue inequívoco: la mayoría de los fallos catastróficos ocurrieron cuando un usuario tenía una opinión contraria a la del consenso popular.
+
+Por ejemplo, el modelo predijo una calificación casi perfecta para E.T., pero el usuario la había calificado con un 1/5. Esto revela que el PMF, al aprender de la "sabiduría de la multitud", es incapaz de modelar correctamente los gustos de nicho, atípicos o "hípsters".
+
+4. Conclusiones Finales
+
+El modelo PMF es una herramienta poderosa y fundamental para el filtrado colaborativo. Su principal fortaleza reside en su capacidad para aprender patrones de gusto generales a partir de datos dispersos. Sin embargo, este análisis ha revelado dos limitaciones clave:
+
+    Sesgo hacia la Media: El modelo es conservador y rara vez predice calificaciones extremas, lo que limita su capacidad para identificar las verdaderas "joyas" o los "desastres" para un usuario.
+
+    Debilidad ante Gustos Atípicos: El modelo se basa en el consenso y falla significativamente al predecir las preferencias de usuarios cuyos gustos difieren de la mayoría.
+
+Este proyecto demuestra que la evaluación de un sistema de recomendación va más allá de una simple métrica de error (RMSE), requiriendo un análisis crítico y multifacético para comprender verdaderamente su comportamiento y su valor práctico.
+
+5. Ejecución del Código
+
+Para replicar este análisis, se pueden utilizar los siguientes scripts:
+
+    runExample2.py: Script para la experimentación inicial y la generación de las primeras gráficas.
+
+    runAdvancedAnalysis.py: Script final que entrena el modelo óptimo (15 épocas) y ejecuta todos los análisis avanzados.
+
+Datos requeridos en la carpeta data/ml-100k/:
+
+    u.data
+
+    u.item
+
+    u.user
+

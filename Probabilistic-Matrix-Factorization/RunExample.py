@@ -28,5 +28,6 @@ if __name__ == "__main__":
     plt.ylabel('RMSE')
     plt.legend()
     plt.grid()
-    plt.show()
+    #plt.show()
+    plt.savefig('curva_aprendizaje.png') 
     print("precision_acc,recall_acc:" + str(pmf.topK(test)))
